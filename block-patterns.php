@@ -1,142 +1,486 @@
 <?php
 /**
- * Block Patterns
- *
- * @link https://developer.wordpress.org/reference/functions/register_block_pattern/
- * @link https://developer.wordpress.org/reference/functions/register_block_pattern_category/
+ * Register the block patterns and block patterns categories
  *
  * @package WordPress
- * @subpackage Twenty_Twenty_One
- * @since Twenty Twenty-One 1.0
+ * @since 5.5.0
  */
 
-if ( function_exists( 'register_block_pattern_category' ) ) {
-	/**
-	 * Register Block Pattern Category.
-	 *
-	 * @since Twenty Twenty-One 1.0
-	 *
-	 * @return void
-	 */
-	function twenty_twenty_one_register_block_pattern_category() {
-		register_block_pattern_category(
-			'twentytwentyone',
-			array( 'label' => esc_html__( 'Twenty Twenty-One', 'twentytwentyone' ) )
+add_theme_support( 'core-block-patterns' );
+
+/**
+ * Registers the core block patterns and categories.
+ *
+ * @since 5.5.0
+ * @access private
+ */
+function _register_core_block_patterns_and_categories() {
+	$should_register_core_patterns = get_theme_support( 'core-block-patterns' );
+
+	if ( $should_register_core_patterns ) {
+		$core_block_patterns = array(
+			'query-standard-posts',
+			'query-medium-posts',
+			'query-small-posts',
+			'query-grid-posts',
+			'query-large-title-posts',
+			'query-offset-posts',
+			'social-links-shared-background-color',
 		);
+
+		foreach ( $core_block_patterns as $core_block_pattern ) {
+			register_block_pattern(
+				'core/' . $core_block_pattern,
+				require __DIR__ . '/block-patterns/' . $core_block_pattern . '.php'
+			);
+		}
 	}
-	add_action( 'init', 'twenty_twenty_one_register_block_pattern_category' );
+
+	register_block_pattern_category( 'banner', array( 'label' => _x( 'Banners', 'Block pattern category' ) ) );
+	register_block_pattern_category(
+		'buttons',
+		array(
+			'label'       => _x( 'Buttons', 'Block pattern category' ),
+			'description' => __( 'Patterns that contain buttons and call to actions.' ),
+		)
+	);
+	register_block_pattern_category(
+		'columns',
+		array(
+			'label'       => _x( 'Columns', 'Block pattern category' ),
+			'description' => __( 'Multi-column patterns with more complex layouts.' ),
+		)
+	);
+	register_block_pattern_category(
+		'text',
+		array(
+			'label'       => _x( 'Text', 'Block pattern category' ),
+			'description' => __( 'Patterns containing mostly text.' ),
+		)
+	);
+	register_block_pattern_category(
+		'query',
+		array(
+			'label'       => _x( 'Posts', 'Block pattern category' ),
+			'description' => __( 'Display your latest posts in lists, grids or other layouts.' ),
+		)
+	);
+	register_block_pattern_category(
+		'featured',
+		array(
+			'label'       => _x( 'Featured', 'Block pattern category' ),
+			'description' => __( 'A set of high quality curated patterns.' ),
+		)
+	);
+	register_block_pattern_category(
+		'call-to-action',
+		array(
+			'label'       => _x( 'Call to Action', 'Block pattern category' ),
+			'description' => __( 'Sections whose purpose is to trigger a specific action.' ),
+		)
+	);
+	register_block_pattern_category(
+		'team',
+		array(
+			'label'       => _x( 'Team', 'Block pattern category' ),
+			'description' => __( 'A variety of designs to display your team members.' ),
+		)
+	);
+	register_block_pattern_category(
+		'testimonials',
+		array(
+			'label'       => _x( 'Testimonials', 'Block pattern category' ),
+			'description' => __( 'Share reviews and feedback about your brand/business.' ),
+		)
+	);
+	register_block_pattern_category(
+		'services',
+		array(
+			'label'       => _x( 'Services', 'Block pattern category' ),
+			'description' => __( 'Briefly describe what your business does and how you can help.' ),
+		)
+	);
+	register_block_pattern_category(
+		'contact',
+		array(
+			'label'       => _x( 'Contact', 'Block pattern category' ),
+			'description' => __( 'Display your contact information.' ),
+		)
+	);
+	register_block_pattern_category(
+		'about',
+		array(
+			'label'       => _x( 'About', 'Block pattern category' ),
+			'description' => __( 'Introduce yourself.' ),
+		)
+	);
+	register_block_pattern_category(
+		'portfolio',
+		array(
+			'label'       => _x( 'Portfolio', 'Block pattern category' ),
+			'description' => __( 'Showcase your latest work.' ),
+		)
+	);
+	register_block_pattern_category(
+		'gallery',
+		array(
+			'label'       => _x( 'Gallery', 'Block pattern category' ),
+			'description' => __( 'Different layouts for displaying images.' ),
+		)
+	);
+	register_block_pattern_category(
+		'media',
+		array(
+			'label'       => _x( 'Media', 'Block pattern category' ),
+			'description' => __( 'Different layouts containing video or audio.' ),
+		)
+	);
+	register_block_pattern_category(
+		'posts',
+		array(
+			'label'       => _x( 'Posts', 'Block pattern category' ),
+			'description' => __( 'Display your latest posts in lists, grids or other layouts.' ),
+		)
+	);
+	register_block_pattern_category(
+		'footer',
+		array(
+			'label'       => _x( 'Footers', 'Block pattern category' ),
+			'description' => __( 'A variety of footer designs displaying information and site navigation.' ),
+		)
+	);
+	register_block_pattern_category(
+		'header',
+		array(
+			'label'       => _x( 'Headers', 'Block pattern category' ),
+			'description' => __( 'A variety of header designs displaying your site title and navigation.' ),
+		)
+	);
 }
 
 /**
- * Register Block Patterns.
+ * Normalize the pattern properties to camelCase.
+ *
+ * The API's format is snake_case, `register_block_pattern()` expects camelCase.
+ *
+ * @since 6.2.0
+ * @access private
+ *
+ * @param array $pattern Pattern as returned from the Pattern Directory API.
+ * @return array Normalized pattern.
  */
-if ( function_exists( 'register_block_pattern' ) ) {
-	/**
-	 * Register Block Pattern.
-	 *
-	 * @since Twenty Twenty-One 1.0
-	 *
-	 * @return void
-	 */
-	function twenty_twenty_one_register_block_pattern() {
-
-		// Large Text.
-		register_block_pattern(
-			'twentytwentyone/large-text',
-			array(
-				'title'         => esc_html__( 'Large text', 'twentytwentyone' ),
-				'categories'    => array( 'twentytwentyone' ),
-				'viewportWidth' => 1440,
-				'blockTypes'    => array( 'core/heading' ),
-				'content'       => '<!-- wp:heading {"align":"wide","fontSize":"gigantic","style":{"typography":{"lineHeight":"1.1"}}} --><h2 class="alignwide has-text-align-wide has-gigantic-font-size" style="line-height:1.1">' . esc_html__( 'A new portfolio default theme for WordPress', 'twentytwentyone' ) . '</h2><!-- /wp:heading -->',
-			)
-		);
-
-		// Links Area.
-		register_block_pattern(
-			'twentytwentyone/links-area',
-			array(
-				'title'         => esc_html__( 'Links area', 'twentytwentyone' ),
-				'categories'    => array( 'twentytwentyone' ),
-				'viewportWidth' => 1440,
-				'blockTypes'    => array( 'core/cover' ),
-				'description'   => esc_html_x( 'A huge text followed by social networks and email address links.', 'Block pattern description', 'twentytwentyone' ),
-				'content'       => '<!-- wp:cover {"overlayColor":"green","contentPosition":"center center","align":"wide","className":"is-style-twentytwentyone-border"} --><div class="wp-block-cover alignwide has-green-background-color has-background-dim is-style-twentytwentyone-border"><div class="wp-block-cover__inner-container"><!-- wp:spacer {"height":20} --><div style="height:20px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer --><!-- wp:paragraph {"fontSize":"huge"} --><p class="has-huge-font-size">' . wp_kses_post( __( 'Let&#8217;s Connect.', 'twentytwentyone' ) ) . '</p><!-- /wp:paragraph --><!-- wp:spacer {"height":75} --><div style="height:75px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer --><!-- wp:columns --><div class="wp-block-columns"><!-- wp:column --><div class="wp-block-column"><!-- wp:paragraph --><p><a href="#" data-type="URL">' . esc_html__( 'Twitter', 'twentytwentyone' ) . '</a> / <a href="#" data-type="URL">' . esc_html__( 'Instagram', 'twentytwentyone' ) . '</a> / <a href="#" data-type="URL">' . esc_html__( 'Dribbble', 'twentytwentyone' ) . '</a></p><!-- /wp:paragraph --></div><!-- /wp:column --><!-- wp:column --><div class="wp-block-column"><!-- wp:paragraph --><p><a href="#">' . esc_html__( 'example@example.com', 'twentytwentyone' ) . '</a></p><!-- /wp:paragraph --></div><!-- /wp:column --></div><!-- /wp:columns --><!-- wp:spacer {"height":20} --><div style="height:20px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer --></div></div><!-- /wp:cover --><!-- wp:paragraph --><p></p><!-- /wp:paragraph -->',
-			)
-		);
-
-		// Media & Text Article Title.
-		register_block_pattern(
-			'twentytwentyone/media-text-article-title',
-			array(
-				'title'         => esc_html__( 'Media and text article title', 'twentytwentyone' ),
-				'categories'    => array( 'twentytwentyone' ),
-				'viewportWidth' => 1440,
-				'description'   => esc_html_x( 'A Media & Text block with a big image on the left and a heading on the right. The heading is followed by a separator and a description paragraph.', 'Block pattern description', 'twentytwentyone' ),
-				'content'       => '<!-- wp:media-text {"mediaId":1752,"mediaLink":"' . esc_url( get_template_directory_uri() ) . '/assets/images/playing-in-the-sand.jpg","mediaType":"image","className":"is-style-twentytwentyone-border"} --><div class="wp-block-media-text alignwide is-stacked-on-mobile is-style-twentytwentyone-border"><figure class="wp-block-media-text__media"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/playing-in-the-sand.jpg" alt="' . esc_attr__( '&#8220;Playing in the Sand&#8221; by Berthe Morisot', 'twentytwentyone' ) . '" class="wp-image-1752"/></figure><div class="wp-block-media-text__content"><!-- wp:heading {"align":"center"} --><h2 class="has-text-align-center">' . esc_html__( 'Playing in the Sand', 'twentytwentyone' ) . '</h2><!-- /wp:heading --><!-- wp:separator {"className":"is-style-dots"} --><hr class="wp-block-separator is-style-dots"/><!-- /wp:separator --><!-- wp:paragraph {"align":"center","fontSize":"small"} --><p class="has-text-align-center has-small-font-size">' . wp_kses_post( __( 'Berthe Morisot<br>(French, 1841-1895)', 'twentytwentyone' ) ) . '</p><!-- /wp:paragraph --></div></div><!-- /wp:media-text -->',
-			)
-		);
-
-		// Overlapping Images.
-		register_block_pattern(
-			'twentytwentyone/overlapping-images',
-			array(
-				'title'         => esc_html__( 'Overlapping images', 'twentytwentyone' ),
-				'categories'    => array( 'twentytwentyone' ),
-				'viewportWidth' => 1024,
-				'blockTypes'    => array( 'core/columns' ),
-				'description'   => esc_html_x( 'Three images inside an overlapping columns block.', 'Block pattern description', 'twentytwentyone' ),
-				'content'       => '<!-- wp:columns {"verticalAlignment":"center","align":"wide","className":"is-style-twentytwentyone-columns-overlap"} --><div class="wp-block-columns alignwide are-vertically-aligned-center is-style-twentytwentyone-columns-overlap"><!-- wp:column {"verticalAlignment":"center"} --><div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"align":"full","sizeSlug":"full"} --><figure class="wp-block-image alignfull size-full"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/roses-tremieres-hollyhocks-1884.jpg" alt="' . esc_attr__( '&#8220;Roses Trémières&#8221; by Berthe Morisot', 'twentytwentyone' ) . '"/></figure><!-- /wp:image --><!-- wp:spacer --><div style="height:100px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer --><!-- wp:image {"align":"full","sizeSlug":"full"} --><figure class="wp-block-image alignfull size-full"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/in-the-bois-de-boulogne.jpg" alt="' . esc_attr__( '&#8220;In the Bois de Boulogne&#8221; by Berthe Morisot', 'twentytwentyone' ) . '"/></figure><!-- /wp:image --></div><!-- /wp:column --><!-- wp:column {"verticalAlignment":"center"} --><div class="wp-block-column is-vertically-aligned-center"><!-- wp:spacer --><div style="height:100px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer --><!-- wp:image {"align":"full",sizeSlug":"full"} --><figure class="wp-block-image alignfull size-full"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/young-woman-in-mauve.jpg" alt="' . esc_attr__( '&#8220;Young Woman in Mauve&#8221; by Berthe Morisot', 'twentytwentyone' ) . '"/></figure><!-- /wp:image --></div><!-- /wp:column --></div><!-- /wp:columns -->',
-			)
-		);
-
-		// Two Images Showcase.
-		register_block_pattern(
-			'twentytwentyone/two-images-showcase',
-			array(
-				'title'         => esc_html__( 'Two images showcase', 'twentytwentyone' ),
-				'categories'    => array( 'twentytwentyone' ),
-				'viewportWidth' => 1440,
-				'description'   => esc_html_x( 'A media & text block with a big image on the left and a smaller one with bordered frame on the right.', 'Block pattern description', 'twentytwentyone' ),
-				'content'       => '<!-- wp:media-text {"mediaId":1747,"mediaLink":"' . esc_url( get_template_directory_uri() ) . '/assets/images/Daffodils.jpg","mediaType":"image"} --><div class="wp-block-media-text alignwide is-stacked-on-mobile"><figure class="wp-block-media-text__media"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/Daffodils.jpg" alt="' . esc_attr__( '&#8220;Daffodils&#8221; by Berthe Morisot', 'twentytwentyone' ) . '" size-full"/></figure><div class="wp-block-media-text__content"><!-- wp:image {"align":"center","width":400,"height":512,"sizeSlug":"large","className":"is-style-twentytwentyone-image-frame"} --><figure class="wp-block-image aligncenter size-large is-resized is-style-twentytwentyone-image-frame"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/self-portrait-1885.jpg" alt="' . esc_attr__( '&#8220;Self portrait&#8221; by Berthe Morisot', 'twentytwentyone' ) . '" width="400" height="512"/></figure><!-- /wp:image --></div></div><!-- /wp:media-text -->',
-			)
-		);
-
-		// Overlapping Images and Text.
-		register_block_pattern(
-			'twentytwentyone/overlapping-images-and-text',
-			array(
-				'title'         => esc_html__( 'Overlapping images and text', 'twentytwentyone' ),
-				'categories'    => array( 'twentytwentyone' ),
-				'viewportWidth' => 1440,
-				'blockTypes'    => array( 'core/columns' ),
-				'description'   => esc_html_x( 'An overlapping columns block with two images and a text description.', 'Block pattern description', 'twentytwentyone' ),
-				'content'       => '<!-- wp:columns {"verticalAlignment":null,"align":"wide","className":"is-style-twentytwentyone-columns-overlap"} --> <div class="wp-block-columns alignwide is-style-twentytwentyone-columns-overlap"><!-- wp:column --> <div class="wp-block-column"><!-- wp:image {sizeSlug":"full"} --> <figure class="wp-block-image size-full"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/the-garden-at-bougival-1884.jpg" alt="' . esc_attr__( '&#8220;The Garden at Bougival&#8221; by Berthe Morisot', 'twentytwentyone' ) . '"/></figure> <!-- /wp:image --></div> <!-- /wp:column --> <!-- wp:column {"verticalAlignment":"bottom"} --> <div class="wp-block-column is-vertically-aligned-bottom"><!-- wp:group {"className":"is-style-twentytwentyone-border","backgroundColor":"green"} --> <div class="wp-block-group is-style-twentytwentyone-border has-green-background-color has-background"><div class="wp-block-group__inner-container"><!-- wp:paragraph {"fontSize":"extra-large","style":{"typography":{"lineHeight":"1.4"}}} --> <p class="has-extra-large-font-size" style="line-height:1.4">' . esc_html__( 'Beautiful gardens painted by Berthe Morisot in the late 1800s', 'twentytwentyone' ) . '</p> <!-- /wp:paragraph --></div></div> <!-- /wp:group --></div> <!-- /wp:column --> <!-- wp:column --> <div class="wp-block-column"><!-- wp:image {sizeSlug":"full"} --> <figure class="wp-block-image size-full"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/villa-with-orange-trees-nice.jpg" alt="' . esc_attr__( '&#8220;Villa with Orange Trees, Nice&#8221; by Berthe Morisot', 'twentytwentyone' ) . '"/></figure> <!-- /wp:image --></div> <!-- /wp:column --></div> <!-- /wp:columns -->',
-			)
-		);
-
-		// Portfolio List.
-		register_block_pattern(
-			'twentytwentyone/portfolio-list',
-			array(
-				'title'       => esc_html__( 'Portfolio list', 'twentytwentyone' ),
-				'categories'  => array( 'twentytwentyone' ),
-				'description' => esc_html_x( 'A list of projects with thumbnail images.', 'Block pattern description', 'twentytwentyone' ),
-				'content'     => '<!-- wp:separator {"className":"is-style-twentytwentyone-separator-thick"} --> <hr class="wp-block-separator is-style-twentytwentyone-separator-thick"/> <!-- /wp:separator --> <!-- wp:columns --> <div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center","width":80} --> <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:80%"><!-- wp:paragraph {"fontSize":"extra-large"} --> <p class="has-extra-large-font-size"><a href="#">' . esc_html__( 'Roses Trémières', 'twentytwentyone' ) . '</a></p> <!-- /wp:paragraph --></div> <!-- /wp:column --> <!-- wp:column {"verticalAlignment":"center"} --> <div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"align":"right","width":85,"height":67,"sizeSlug":"large"} --> <figure class="wp-block-image alignright size-large is-resized"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/roses-tremieres-hollyhocks-1884.jpg" alt="' . esc_attr__( '&#8220;Roses Trémières&#8221; by Berthe Morisot', 'twentytwentyone' ) . '" width="85" height="67"/></figure> <!-- /wp:image --></div> <!-- /wp:column --></div> <!-- /wp:columns --> <!-- wp:separator {"className":"is-style-default"} --> <hr class="wp-block-separator is-style-default"/> <!-- /wp:separator --> <!-- wp:columns --> <div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center","width":80} --> <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:80%"><!-- wp:paragraph {"fontSize":"extra-large"} --> <p class="has-extra-large-font-size"><a href="#">' . esc_html__( 'Villa with Orange Trees, Nice', 'twentytwentyone' ) . '</a></p> <!-- /wp:paragraph --></div> <!-- /wp:column --> <!-- wp:column {"verticalAlignment":"center"} --> <div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"align":"right","width":53,"height":67,"className":"alignright size-large is-resized"} --><figure class="wp-block-image is-resized alignright size-large"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/villa-with-orange-trees-nice.jpg" alt="&#8220;Villa with Orange Trees, Nice&#8221; by Berthe Morisot" width="53" height="67"/></figure><!-- /wp:image --></div> <!-- /wp:column --></div> <!-- /wp:columns --> <!-- wp:separator {"className":"is-style-default"} --> <hr class="wp-block-separator is-style-default"/> <!-- /wp:separator --> <!-- wp:columns --> <div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center","width":80} --> <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:80%"><!-- wp:paragraph {"fontSize":"extra-large"} --> <p class="has-extra-large-font-size"><a href="#">' . esc_html__( 'In the Bois de Boulogne', 'twentytwentyone' ) . '</a></p> <!-- /wp:paragraph --></div> <!-- /wp:column --> <!-- wp:column {"verticalAlignment":"center"} --> <div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"align":"right","width":81,"height":67,"sizeSlug":"large"} --> <figure class="wp-block-image alignright size-large is-resized"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/in-the-bois-de-boulogne.jpg" alt="' . esc_attr__( '&#8220;In the Bois de Boulogne&#8221; by Berthe Morisot', 'twentytwentyone' ) . '" width="81" height="67"/></figure> <!-- /wp:image --></div> <!-- /wp:column --></div> <!-- /wp:columns --> <!-- wp:separator {"className":"is-style-default"} --> <hr class="wp-block-separator is-style-default"/> <!-- /wp:separator --> <!-- wp:columns --> <div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center","width":80} --> <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:80%"><!-- wp:paragraph {"fontSize":"extra-large"} --> <p class="has-extra-large-font-size"><a href="#">' . esc_html__( 'The Garden at Bougival', 'twentytwentyone' ) . '</a></p> <!-- /wp:paragraph --></div> <!-- /wp:column --> <!-- wp:column {"verticalAlignment":"center"} --> <div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"align":"right","width":85,"height":67,"sizeSlug":"large"} --> <figure class="wp-block-image alignright size-large is-resized"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/the-garden-at-bougival-1884.jpg" alt="' . esc_attr__( '&#8220;The Garden at Bougival&#8221; by Berthe Morisot', 'twentytwentyone' ) . '" width="85" height="67"/></figure> <!-- /wp:image --></div> <!-- /wp:column --></div> <!-- /wp:columns --> <!-- wp:separator {"className":"is-style-default"} --> <hr class="wp-block-separator is-style-default"/> <!-- /wp:separator --> <!-- wp:columns --> <div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center","width":80} --> <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:80%"><!-- wp:paragraph {"fontSize":"extra-large"} --> <p class="has-extra-large-font-size"><a href="#">' . esc_html__( 'Young Woman in Mauve', 'twentytwentyone' ) . '</a></p> <!-- /wp:paragraph --></div> <!-- /wp:column --> <!-- wp:column {"verticalAlignment":"center"} --> <div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"align":"right","width":54,"height":67,"sizeSlug":"large"} --> <figure class="wp-block-image alignright size-large is-resized"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/young-woman-in-mauve.jpg" alt="' . esc_attr__( '&#8220;Young Woman in Mauve&#8221; by Berthe Morisot', 'twentytwentyone' ) . '" width="54" height="67"/></figure> <!-- /wp:image --></div> <!-- /wp:column --></div> <!-- /wp:columns --> <!-- wp:separator {"className":"is-style-default"} --> <hr class="wp-block-separator is-style-default"/> <!-- /wp:separator --> <!-- wp:columns --> <div class="wp-block-columns"><!-- wp:column {"verticalAlignment":"center","width":80} --> <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:80%"><!-- wp:paragraph {"fontSize":"extra-large"} --> <p class="has-extra-large-font-size"><a href="#">' . esc_html__( 'Reading', 'twentytwentyone' ) . '</a></p> <!-- /wp:paragraph --></div> <!-- /wp:column --> <!-- wp:column {"verticalAlignment":"center"} --> <div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"align":"right","width":84,"height":67,"sizeSlug":"large"} --> <figure class="wp-block-image alignright size-large is-resized"><img src="' . esc_url( get_template_directory_uri() ) . '/assets/images/Reading.jpg" alt="' . esc_attr__( '&#8220;Reading&#8221; by Berthe Morisot', 'twentytwentyone' ) . '" width="84" height="67"/></figure> <!-- /wp:image --></div> <!-- /wp:column --></div> <!-- /wp:columns --> <!-- wp:separator {"className":"is-style-twentytwentyone-separator-thick"} --> <hr class="wp-block-separator is-style-twentytwentyone-separator-thick"/> <!-- /wp:separator -->',
-			)
-		);
-
-		register_block_pattern(
-			'twentytwentyone/contact-information',
-			array(
-				'title'       => esc_html__( 'Contact information', 'twentytwentyone' ),
-				'categories'  => array( 'twentytwentyone' ),
-				'blockTypes'  => array( 'core/columns' ),
-				'description' => esc_html_x( 'A block with 3 columns that display contact information and social media links.', 'Block pattern description', 'twentytwentyone' ),
-				'content'     => '<!-- wp:columns {"align":"wide"} --><div class="wp-block-columns alignwide"><!-- wp:column --><div class="wp-block-column"><!-- wp:paragraph --><p><a href="mailto:#">' . esc_html_x( 'example@example.com', 'Block pattern sample content', 'twentytwentyone' ) . '<br></a>' . esc_html_x( '123-456-7890', 'Block pattern sample content', 'twentytwentyone' ) . '</p><!-- /wp:paragraph --></div><!-- /wp:column --><!-- wp:column --><div class="wp-block-column"><!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">' . esc_html_x( '123 Main Street', 'Block pattern sample content', 'twentytwentyone' ) . '<br>' . esc_html_x( 'Cambridge, MA, 02139', 'Block pattern sample content', 'twentytwentyone' ) . '</p><!-- /wp:paragraph --></div><!-- /wp:column --><!-- wp:column {"verticalAlignment":"center"} --><div class="wp-block-column is-vertically-aligned-center"><!-- wp:social-links {"align":"right","className":"is-style-twentytwentyone-social-icons-color"} --><ul class="wp-block-social-links alignright is-style-twentytwentyone-social-icons-color"><!-- wp:social-link {"url":"https://wordpress.org","service":"wordpress"} /--><!-- wp:social-link {"url":"https://www.facebook.com/WordPress/","service":"facebook"} /--><!-- wp:social-link {"url":"https://twitter.com/WordPress","service":"twitter"} /--><!-- wp:social-link {"url":"https://www.youtube.com/wordpress","service":"youtube"} /--></ul><!-- /wp:social-links --></div><!-- /wp:column --></div><!-- /wp:columns -->',
-			)
-		);
-
+function wp_normalize_remote_block_pattern( $pattern ) {
+	if ( isset( $pattern['block_types'] ) ) {
+		$pattern['blockTypes'] = $pattern['block_types'];
+		unset( $pattern['block_types'] );
 	}
-	add_action( 'init', 'twenty_twenty_one_register_block_pattern' );
+
+	if ( isset( $pattern['viewport_width'] ) ) {
+		$pattern['viewportWidth'] = $pattern['viewport_width'];
+		unset( $pattern['viewport_width'] );
+	}
+
+	return (array) $pattern;
 }
+
+/**
+ * Register Core's official patterns from wordpress.org/patterns.
+ *
+ * @since 5.8.0
+ * @since 5.9.0 The $current_screen argument was removed.
+ * @since 6.2.0 Normalize the pattern from the API (snake_case) to the
+ *              format expected by `register_block_pattern` (camelCase).
+ *
+ * @param WP_Screen $deprecated Unused. Formerly the screen that the current request was triggered from.
+ */
+function _load_remote_block_patterns( $deprecated = null ) {
+	if ( ! empty( $deprecated ) ) {
+		_deprecated_argument( __FUNCTION__, '5.9.0' );
+		$current_screen = $deprecated;
+		if ( ! $current_screen->is_block_editor ) {
+			return;
+		}
+	}
+
+	$supports_core_patterns = get_theme_support( 'core-block-patterns' );
+
+	/**
+	 * Filter to disable remote block patterns.
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param bool $should_load_remote
+	 */
+	$should_load_remote = apply_filters( 'should_load_remote_block_patterns', true );
+
+	if ( $supports_core_patterns && $should_load_remote ) {
+		$request         = new WP_REST_Request( 'GET', '/wp/v2/pattern-directory/patterns' );
+		$core_keyword_id = 11; // 11 is the ID for "core".
+		$request->set_param( 'keyword', $core_keyword_id );
+		$response = rest_do_request( $request );
+		if ( $response->is_error() ) {
+			return;
+		}
+		$patterns = $response->get_data();
+
+		foreach ( $patterns as $pattern ) {
+			$normalized_pattern = wp_normalize_remote_block_pattern( $pattern );
+			$pattern_name       = 'core/' . sanitize_title( $normalized_pattern['title'] );
+			register_block_pattern( $pattern_name, $normalized_pattern );
+		}
+	}
+}
+
+/**
+ * Register `Featured` (category) patterns from wordpress.org/patterns.
+ *
+ * @since 5.9.0
+ * @since 6.2.0 Normalized the pattern from the API (snake_case) to the
+ *              format expected by `register_block_pattern()` (camelCase).
+ */
+function _load_remote_featured_patterns() {
+	$supports_core_patterns = get_theme_support( 'core-block-patterns' );
+
+	/** This filter is documented in wp-includes/block-patterns.php */
+	$should_load_remote = apply_filters( 'should_load_remote_block_patterns', true );
+
+	if ( ! $should_load_remote || ! $supports_core_patterns ) {
+		return;
+	}
+
+	$request         = new WP_REST_Request( 'GET', '/wp/v2/pattern-directory/patterns' );
+	$featured_cat_id = 26; // This is the `Featured` category id from pattern directory.
+	$request->set_param( 'category', $featured_cat_id );
+	$response = rest_do_request( $request );
+	if ( $response->is_error() ) {
+		return;
+	}
+	$patterns = $response->get_data();
+	$registry = WP_Block_Patterns_Registry::get_instance();
+	foreach ( $patterns as $pattern ) {
+		$normalized_pattern = wp_normalize_remote_block_pattern( $pattern );
+		$pattern_name       = sanitize_title( $normalized_pattern['title'] );
+		// Some patterns might be already registered as core patterns with the `core` prefix.
+		$is_registered = $registry->is_registered( $pattern_name ) || $registry->is_registered( "core/$pattern_name" );
+		if ( ! $is_registered ) {
+			register_block_pattern( $pattern_name, $normalized_pattern );
+		}
+	}
+}
+
+/**
+ * Registers patterns from Pattern Directory provided by a theme's
+ * `theme.json` file.
+ *
+ * @since 6.0.0
+ * @since 6.2.0 Normalized the pattern from the API (snake_case) to the
+ *              format expected by `register_block_pattern()` (camelCase).
+ * @access private
+ */
+function _register_remote_theme_patterns() {
+	/** This filter is documented in wp-includes/block-patterns.php */
+	if ( ! apply_filters( 'should_load_remote_block_patterns', true ) ) {
+		return;
+	}
+
+	if ( ! wp_theme_has_theme_json() ) {
+		return;
+	}
+
+	$pattern_settings = WP_Theme_JSON_Resolver::get_theme_data()->get_patterns();
+	if ( empty( $pattern_settings ) ) {
+		return;
+	}
+
+	$request         = new WP_REST_Request( 'GET', '/wp/v2/pattern-directory/patterns' );
+	$request['slug'] = $pattern_settings;
+	$response        = rest_do_request( $request );
+	if ( $response->is_error() ) {
+		return;
+	}
+	$patterns          = $response->get_data();
+	$patterns_registry = WP_Block_Patterns_Registry::get_instance();
+	foreach ( $patterns as $pattern ) {
+		$normalized_pattern = wp_normalize_remote_block_pattern( $pattern );
+		$pattern_name       = sanitize_title( $normalized_pattern['title'] );
+		// Some patterns might be already registered as core patterns with the `core` prefix.
+		$is_registered = $patterns_registry->is_registered( $pattern_name ) || $patterns_registry->is_registered( "core/$pattern_name" );
+		if ( ! $is_registered ) {
+			register_block_pattern( $pattern_name, $normalized_pattern );
+		}
+	}
+}
+
+/**
+ * Register any patterns that the active theme may provide under its
+ * `./patterns/` directory. Each pattern is defined as a PHP file and defines
+ * its metadata using plugin-style headers. The minimum required definition is:
+ *
+ *     /**
+ *      * Title: My Pattern
+ *      * Slug: my-theme/my-pattern
+ *      *
+ *
+ * The output of the PHP source corresponds to the content of the pattern, e.g.:
+ *
+ *     <main><p><?php echo "Hello"; ?></p></main>
+ *
+ * If applicable, this will collect from both parent and child theme.
+ *
+ * Other settable fields include:
+ *
+ *   - Description
+ *   - Viewport Width
+ *   - Inserter         (yes/no)
+ *   - Categories       (comma-separated values)
+ *   - Keywords         (comma-separated values)
+ *   - Block Types      (comma-separated values)
+ *   - Post Types       (comma-separated values)
+ *   - Template Types   (comma-separated values)
+ *
+ * @since 6.0.0
+ * @since 6.1.0 The `postTypes` property was added.
+ * @since 6.2.0 The `templateTypes` property was added.
+ * @access private
+ */
+function _register_theme_block_patterns() {
+	$default_headers = array(
+		'title'         => 'Title',
+		'slug'          => 'Slug',
+		'description'   => 'Description',
+		'viewportWidth' => 'Viewport Width',
+		'inserter'      => 'Inserter',
+		'categories'    => 'Categories',
+		'keywords'      => 'Keywords',
+		'blockTypes'    => 'Block Types',
+		'postTypes'     => 'Post Types',
+		'templateTypes' => 'Template Types',
+	);
+
+	/*
+	 * Register patterns for the active theme. If the theme is a child theme,
+	 * let it override any patterns from the parent theme that shares the same slug.
+	 */
+	$themes     = array();
+	$stylesheet = get_stylesheet();
+	$template   = get_template();
+	if ( $stylesheet !== $template ) {
+		$themes[] = wp_get_theme( $stylesheet );
+	}
+	$themes[] = wp_get_theme( $template );
+
+	foreach ( $themes as $theme ) {
+		$dirpath = $theme->get_stylesheet_directory() . '/patterns/';
+		if ( ! is_dir( $dirpath ) || ! is_readable( $dirpath ) ) {
+			continue;
+		}
+		if ( file_exists( $dirpath ) ) {
+			$files = glob( $dirpath . '*.php' );
+			if ( $files ) {
+				foreach ( $files as $file ) {
+					$pattern_data = get_file_data( $file, $default_headers );
+
+					if ( empty( $pattern_data['slug'] ) ) {
+						_doing_it_wrong(
+							'_register_theme_block_patterns',
+							sprintf(
+								/* translators: %s: file name. */
+								__( 'Could not register file "%s" as a block pattern ("Slug" field missing)' ),
+								$file
+							),
+							'6.0.0'
+						);
+						continue;
+					}
+
+					if ( ! preg_match( '/^[A-z0-9\/_-]+$/', $pattern_data['slug'] ) ) {
+						_doing_it_wrong(
+							'_register_theme_block_patterns',
+							sprintf(
+								/* translators: %1s: file name; %2s: slug value found. */
+								__( 'Could not register file "%1$s" as a block pattern (invalid slug "%2$s")' ),
+								$file,
+								$pattern_data['slug']
+							),
+							'6.0.0'
+						);
+					}
+
+					if ( WP_Block_Patterns_Registry::get_instance()->is_registered( $pattern_data['slug'] ) ) {
+						continue;
+					}
+
+					// Title is a required property.
+					if ( ! $pattern_data['title'] ) {
+						_doing_it_wrong(
+							'_register_theme_block_patterns',
+							sprintf(
+								/* translators: %1s: file name; %2s: slug value found. */
+								__( 'Could not register file "%s" as a block pattern ("Title" field missing)' ),
+								$file
+							),
+							'6.0.0'
+						);
+						continue;
+					}
+
+					// For properties of type array, parse data as comma-separated.
+					foreach ( array( 'categories', 'keywords', 'blockTypes', 'postTypes', 'templateTypes' ) as $property ) {
+						if ( ! empty( $pattern_data[ $property ] ) ) {
+							$pattern_data[ $property ] = array_filter(
+								preg_split(
+									'/[\s,]+/',
+									(string) $pattern_data[ $property ]
+								)
+							);
+						} else {
+							unset( $pattern_data[ $property ] );
+						}
+					}
+
+					// Parse properties of type int.
+					foreach ( array( 'viewportWidth' ) as $property ) {
+						if ( ! empty( $pattern_data[ $property ] ) ) {
+							$pattern_data[ $property ] = (int) $pattern_data[ $property ];
+						} else {
+							unset( $pattern_data[ $property ] );
+						}
+					}
+
+					// Parse properties of type bool.
+					foreach ( array( 'inserter' ) as $property ) {
+						if ( ! empty( $pattern_data[ $property ] ) ) {
+							$pattern_data[ $property ] = in_array(
+								strtolower( $pattern_data[ $property ] ),
+								array( 'yes', 'true' ),
+								true
+							);
+						} else {
+							unset( $pattern_data[ $property ] );
+						}
+					}
+
+					// Translate the pattern metadata.
+					$text_domain = $theme->get( 'TextDomain' );
+					//phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText, WordPress.WP.I18n.NonSingularStringLiteralContext, WordPress.WP.I18n.NonSingularStringLiteralDomain, WordPress.WP.I18n.LowLevelTranslationFunction
+					$pattern_data['title'] = translate_with_gettext_context( $pattern_data['title'], 'Pattern title', $text_domain );
+					if ( ! empty( $pattern_data['description'] ) ) {
+						//phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText, WordPress.WP.I18n.NonSingularStringLiteralContext, WordPress.WP.I18n.NonSingularStringLiteralDomain, WordPress.WP.I18n.LowLevelTranslationFunction
+						$pattern_data['description'] = translate_with_gettext_context( $pattern_data['description'], 'Pattern description', $text_domain );
+					}
+
+					// The actual pattern content is the output of the file.
+					ob_start();
+					include $file;
+					$pattern_data['content'] = ob_get_clean();
+					if ( ! $pattern_data['content'] ) {
+						continue;
+					}
+
+					register_block_pattern( $pattern_data['slug'], $pattern_data );
+				}
+			}
+		}
+	}
+}
+add_action( 'init', '_register_theme_block_patterns' );
